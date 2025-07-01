@@ -21,7 +21,7 @@ const Projects = () => {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     Name: '',
     title: '',
     description: '',
@@ -233,11 +233,11 @@ const Projects = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Client ID *
-                  </label>
+</label>
                   <Input
                     type="number"
                     value={formData.client_id}
-                    onChange={(e) => setFormData(prev => ({ ...prev, client_id: parseInt(e.target.value) }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, client_id: e.target.value === '' ? '' : parseInt(e.target.value) }))}
                     required
                   />
                 </div>
@@ -256,11 +256,11 @@ const Projects = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Budget
                   </label>
-                  <Input
+<Input
                     type="number"
                     step="0.01"
                     value={formData.budget}
-                    onChange={(e) => setFormData(prev => ({ ...prev, budget: parseFloat(e.target.value) }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value === '' ? '' : parseFloat(e.target.value) }))}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
