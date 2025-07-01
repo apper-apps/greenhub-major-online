@@ -67,6 +67,54 @@ export const proposalService = {
     if (status === 'accepted') {
       proposals[index].acceptedAt = new Date().toISOString()
     }
+return { ...proposals[index] }
+  },
+
+  async generateSigningLink(id) {
+    await delay(300)
+    const { nanoid } = await import('nanoid')
+    const index = proposals.findIndex(p => p.Id === parseInt(id))
+    if (index === -1) {
+      throw new Error('Proposal not found')
+    }
+    
+    const signingToken = nanoid(32)
+    const signingLink = `${window.location.origin}/sign/proposal/${signingToken}`
+    
+    proposals[index].signingToken = signingToken
+    proposals[index].signingLink = signingLink
+    proposals[index].signingLinkCreatedAt = new Date().toISOString()
+    
+    return { 
+      signingLink,
+      signingToken,
+      proposal: { ...proposals[index] }
+    }
+  },
+
+  async getBySigningToken(token) {
+    await delay(200)
+    const proposal = proposals.find(p => p.signingToken === token)
+    if (!proposal) {
+      throw new Error('Invalid signing token')
+    }
+    return { ...proposal }
+  },
+
+  async updateSigningStatus(id, status) {
+    await delay(250)
+    const index = proposals.findIndex(p => p.Id === parseInt(id))
+    if (index === -1) {
+      throw new Error('Proposal not found')
+    }
+    
+    proposals[index].signingStatus = status
+    if (status === 'signed') {
+      proposals[index].signedAt = new Date().toISOString()
+      proposals[index].status = 'accepted'
+      proposals[index].acceptedAt = new Date().toISOString()
+    }
+    
     return { ...proposals[index] }
   }
 }

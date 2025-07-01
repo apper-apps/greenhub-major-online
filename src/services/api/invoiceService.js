@@ -73,6 +73,56 @@ export const invoiceService = {
     if (status === 'paid') {
       invoices[index].paidDate = new Date().toISOString()
     }
+return { ...invoices[index] }
+  },
+
+  async generateSigningLink(id) {
+    await delay(300)
+    const { nanoid } = await import('nanoid')
+    const index = invoices.findIndex(i => i.Id === parseInt(id))
+    if (index === -1) {
+      throw new Error('Invoice not found')
+    }
+    
+    const signingToken = nanoid(32)
+    const signingLink = `${window.location.origin}/sign/invoice/${signingToken}`
+    
+    invoices[index].signingToken = signingToken
+    invoices[index].signingLink = signingLink
+    invoices[index].signingLinkCreatedAt = new Date().toISOString()
+    
+    return { 
+      signingLink,
+      signingToken,
+      invoice: { ...invoices[index] }
+    }
+  },
+
+  async getBySigningToken(token) {
+    await delay(200)
+    const invoice = invoices.find(i => i.signingToken === token)
+    if (!invoice) {
+      throw new Error('Invalid signing token')
+    }
+    return { ...invoice }
+  },
+
+  async updateSigningStatus(id, status) {
+    await delay(250)
+    const index = invoices.findIndex(i => i.Id === parseInt(id))
+    if (index === -1) {
+      throw new Error('Invoice not found')
+    }
+    
+    invoices[index].signingStatus = status
+    if (status === 'signed') {
+      invoices[index].signedAt = new Date().toISOString()
+      if (invoices[index].status === 'draft' || invoices[index].status === 'sent') {
+        invoices[index].status = 'paid'
+        invoices[index].paidDate = new Date().toISOString()
+      }
+    }
+    
     return { ...invoices[index] }
   }
 }
