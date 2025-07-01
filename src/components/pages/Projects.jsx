@@ -161,7 +161,7 @@ const [formData, setFormData] = useState({
                     {project.title || project.Name}
                   </h3>
                   <p className="text-gray-600 mb-4">{project.description}</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
                     <div>
                       <p><strong>Budget:</strong> ${project.budget?.toLocaleString() || 'N/A'}</p>
                       <p><strong>Actual Cost:</strong> ${project.actual_cost?.toLocaleString() || '0'}</p>
@@ -253,10 +253,10 @@ const [formData, setFormData] = useState({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+<label className="block text-sm font-medium text-gray-700 mb-1">
                     Budget
                   </label>
-<Input
+                  <Input
                     type="number"
                     step="0.01"
                     value={formData.budget}
