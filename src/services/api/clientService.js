@@ -1,66 +1,185 @@
-import clientsData from '@/services/mockData/clients.json'
-
-let clients = [...clientsData]
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
 export const clientService = {
   async getAll() {
-    await delay(300)
-    return [...clients]
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "email" } },
+          { field: { Name: "phone" } },
+          { field: { Name: "address" } },
+          { field: { Name: "property_size" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "last_contact" } },
+          { field: { Name: "status" } },
+          { field: { Name: "projects_count" } },
+          { field: { Name: "total_revenue" } }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('client', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      throw error;
+    }
   },
 
   async getById(id) {
-    await delay(200)
-    const client = clients.find(c => c.Id === parseInt(id))
-    if (!client) {
-      throw new Error('Client not found')
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "email" } },
+          { field: { Name: "phone" } },
+          { field: { Name: "address" } },
+          { field: { Name: "property_size" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "last_contact" } },
+          { field: { Name: "status" } },
+          { field: { Name: "projects_count" } },
+          { field: { Name: "total_revenue" } }
+        ]
+      };
+
+      const response = await apperClient.getRecordById('client', parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching client with ID ${id}:`, error);
+      throw error;
     }
-    return { ...client }
   },
 
   async create(clientData) {
-    await delay(400)
-    const newClient = {
-      Id: Math.max(...clients.map(c => c.Id), 0) + 1,
-      ...clientData,
-      createdAt: new Date().toISOString(),
-      status: 'active',
-      projectsCount: 0,
-      totalRevenue: 0.00
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [
+          {
+            Name: clientData.Name,
+            email: clientData.email,
+            phone: clientData.phone,
+            address: clientData.address,
+            property_size: clientData.property_size,
+            notes: clientData.notes,
+            last_contact: clientData.last_contact,
+            status: clientData.status || 'active',
+            projects_count: 0,
+            total_revenue: 0.00
+          }
+        ]
+      };
+
+      const response = await apperClient.createRecord('client', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          throw new Error(failedRecords[0].message);
+        }
+        return response.results[0].data;
+      }
+    } catch (error) {
+      console.error("Error creating client:", error);
+      throw error;
     }
-    clients.push(newClient)
-    return { ...newClient }
   },
 
   async update(id, clientData) {
-    await delay(350)
-    const index = clients.findIndex(c => c.Id === parseInt(id))
-    if (index === -1) {
-      throw new Error('Client not found')
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [
+          {
+            Id: parseInt(id),
+            ...clientData
+          }
+        ]
+      };
+
+      const response = await apperClient.updateRecord('client', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        if (failedRecords.length > 0) {
+          console.error(`Failed to update ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          throw new Error(failedRecords[0].message);
+        }
+        return response.results[0].data;
+      }
+    } catch (error) {
+      console.error("Error updating client:", error);
+      throw error;
     }
-    clients[index] = { ...clients[index], ...clientData }
-    return { ...clients[index] }
   },
 
   async delete(id) {
-    await delay(300)
-    const index = clients.findIndex(c => c.Id === parseInt(id))
-    if (index === -1) {
-      throw new Error('Client not found')
-    }
-    clients.splice(index, 1)
-    return true
-  },
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-  async search(query) {
-    await delay(250)
-    const searchTerm = query.toLowerCase()
-    return clients.filter(client => 
-      client.name.toLowerCase().includes(searchTerm) ||
-      client.email.toLowerCase().includes(searchTerm) ||
-      client.phone.includes(searchTerm) ||
-      client.address.toLowerCase().includes(searchTerm)
-    )
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await apperClient.deleteRecord('client', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error deleting client:", error);
+      throw error;
+    }
   }
-}
+};

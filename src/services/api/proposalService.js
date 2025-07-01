@@ -1,120 +1,208 @@
-import proposalsData from '@/services/mockData/proposals.json'
-
-let proposals = [...proposalsData]
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
 export const proposalService = {
   async getAll() {
-    await delay(300)
-    return [...proposals]
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title" } },
+          { field: { Name: "description" } },
+          { field: { Name: "status" } },
+          { field: { Name: "subtotal" } },
+          { field: { Name: "tax" } },
+          { field: { Name: "total" } },
+          { field: { Name: "valid_until" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "signing_link" } },
+          { field: { Name: "client_id" } }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('proposal', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching proposals:", error);
+      throw error;
+    }
   },
 
   async getById(id) {
-    await delay(200)
-    const proposal = proposals.find(p => p.Id === parseInt(id))
-    if (!proposal) {
-      throw new Error('Proposal not found')
-    }
-    return { ...proposal }
-  },
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-  async getByClientId(clientId) {
-    await delay(250)
-    return proposals.filter(p => p.clientId === parseInt(clientId))
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title" } },
+          { field: { Name: "description" } },
+          { field: { Name: "status" } },
+          { field: { Name: "subtotal" } },
+          { field: { Name: "tax" } },
+          { field: { Name: "total" } },
+          { field: { Name: "valid_until" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "signing_link" } },
+          { field: { Name: "client_id" } }
+        ]
+      };
+
+      const response = await apperClient.getRecordById('proposal', parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching proposal with ID ${id}:`, error);
+      throw error;
+    }
   },
 
   async create(proposalData) {
-    await delay(400)
-    const newProposal = {
-      Id: Math.max(...proposals.map(p => p.Id), 0) + 1,
-      ...proposalData,
-      createdAt: new Date().toISOString(),
-      status: 'pending',
-      acceptedAt: null
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [
+          {
+            Name: proposalData.Name || proposalData.title,
+            title: proposalData.title,
+            description: proposalData.description,
+            status: 'pending',
+            subtotal: proposalData.subtotal || 0,
+            tax: proposalData.tax || 0,
+            total: proposalData.total || 0,
+            valid_until: proposalData.valid_until || proposalData.validUntil,
+            notes: proposalData.notes,
+            client_id: parseInt(proposalData.client_id) || parseInt(proposalData.clientId)
+          }
+        ]
+      };
+
+      const response = await apperClient.createRecord('proposal', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          throw new Error(failedRecords[0].message);
+        }
+        return response.results[0].data;
+      }
+    } catch (error) {
+      console.error("Error creating proposal:", error);
+      throw error;
     }
-    proposals.push(newProposal)
-    return { ...newProposal }
   },
 
   async update(id, proposalData) {
-    await delay(350)
-    const index = proposals.findIndex(p => p.Id === parseInt(id))
-    if (index === -1) {
-      throw new Error('Proposal not found')
-    }
-    proposals[index] = { ...proposals[index], ...proposalData }
-    return { ...proposals[index] }
-  },
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-  async delete(id) {
-    await delay(300)
-    const index = proposals.findIndex(p => p.Id === parseInt(id))
-    if (index === -1) {
-      throw new Error('Proposal not found')
+      const params = {
+        records: [
+          {
+            Id: parseInt(id),
+            ...proposalData
+          }
+        ]
+      };
+
+      const response = await apperClient.updateRecord('proposal', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        if (failedRecords.length > 0) {
+          console.error(`Failed to update ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          throw new Error(failedRecords[0].message);
+        }
+        return response.results[0].data;
+      }
+    } catch (error) {
+      console.error("Error updating proposal:", error);
+      throw error;
     }
-    proposals.splice(index, 1)
-    return true
   },
 
   async updateStatus(id, status) {
-    await delay(250)
-    const index = proposals.findIndex(p => p.Id === parseInt(id))
-    if (index === -1) {
-      throw new Error('Proposal not found')
-    }
-    proposals[index].status = status
-    if (status === 'accepted') {
-      proposals[index].acceptedAt = new Date().toISOString()
-    }
-return { ...proposals[index] }
+    return this.update(id, { status });
   },
 
   async generateSigningLink(id) {
-    await delay(300)
-    const { nanoid } = await import('nanoid')
-    const index = proposals.findIndex(p => p.Id === parseInt(id))
-    if (index === -1) {
-      throw new Error('Proposal not found')
-    }
-    
-    const signingToken = nanoid(32)
-    const signingLink = `${window.location.origin}/sign/proposal/${signingToken}`
-    
-    proposals[index].signingToken = signingToken
-    proposals[index].signingLink = signingLink
-    proposals[index].signingLinkCreatedAt = new Date().toISOString()
-    
-    return { 
-      signingLink,
-      signingToken,
-      proposal: { ...proposals[index] }
+    try {
+      const { nanoid } = await import('nanoid');
+      const signingLink = `${window.location.origin}/sign/proposal/${nanoid(32)}`;
+      
+      const updated = await this.update(id, { signing_link: signingLink });
+      
+      return {
+        signingLink,
+        proposal: updated
+      };
+    } catch (error) {
+      console.error("Error generating signing link:", error);
+      throw error;
     }
   },
 
-  async getBySigningToken(token) {
-    await delay(200)
-    const proposal = proposals.find(p => p.signingToken === token)
-    if (!proposal) {
-      throw new Error('Invalid signing token')
-    }
-    return { ...proposal }
-  },
+  async delete(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-  async updateSigningStatus(id, status) {
-    await delay(250)
-    const index = proposals.findIndex(p => p.Id === parseInt(id))
-    if (index === -1) {
-      throw new Error('Proposal not found')
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await apperClient.deleteRecord('proposal', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error deleting proposal:", error);
+      throw error;
     }
-    
-    proposals[index].signingStatus = status
-    if (status === 'signed') {
-      proposals[index].signedAt = new Date().toISOString()
-      proposals[index].status = 'accepted'
-      proposals[index].acceptedAt = new Date().toISOString()
-    }
-    
-    return { ...proposals[index] }
   }
-}
+};

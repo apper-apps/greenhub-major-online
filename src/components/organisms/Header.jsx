@@ -24,7 +24,7 @@ const Header = ({ onMenuClick, title, children }) => {
           )}
         </div>
         
-        <div className="flex items-center gap-4">
+<div className="flex items-center gap-4">
           {children}
           <Button
             variant="ghost"
@@ -33,6 +33,19 @@ const Header = ({ onMenuClick, title, children }) => {
             className="relative"
           >
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              if (confirm('Are you sure you want to logout?')) {
+                const { ApperUI } = window.ApperSDK;
+                ApperUI.logout();
+              }
+            }}
+          >
+            <ApperIcon name="LogOut" size={16} />
+            Logout
           </Button>
         </div>
       </div>
