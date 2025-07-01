@@ -21,7 +21,7 @@ const Projects = () => {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     Name: '',
     title: '',
     description: '',
@@ -39,11 +39,15 @@ const [formData, setFormData] = useState({
   const fetchProjects = async () => {
     try {
       setLoading(true)
+      setError(null)
       const data = await projectService.getAll()
-      setProjects(data)
+      // Ensure we have valid data array
+      setProjects(Array.isArray(data) ? data : [])
     } catch (err) {
-      setError(err.message)
-      toast.error('Failed to load projects')
+      const errorMessage = err?.message || 'Failed to load projects'
+      setError(errorMessage)
+      toast.error(errorMessage)
+      setProjects([])
     } finally {
       setLoading(false)
     }
@@ -51,41 +55,87 @@ const [formData, setFormData] = useState({
 
   const handleCreate = async (e) => {
     e.preventDefault()
-    if (!formData.title || !formData.client_id) {
-      toast.error('Please fill in required fields')
+    
+    // Enhanced validation
+    if (!formData.title?.trim()) {
+      toast.error('Project title is required')
       return
+    }
+    
+    if (!formData.client_id) {
+      toast.error('Client ID is required')
+      return
+    }
+
+    // Validate client_id is a valid number
+    const clientId = parseInt(formData.client_id)
+    if (isNaN(clientId) || clientId <= 0) {
+      toast.error('Client ID must be a valid positive number')
+      return
+    }
+
+    // Validate budget if provided
+    let budgetValue = 0
+    if (formData.budget) {
+      budgetValue = parseFloat(formData.budget)
+      if (isNaN(budgetValue) || budgetValue < 0) {
+        toast.error('Budget must be a valid positive number')
+        return
+      }
     }
 
     try {
       setIsSubmitting(true)
-      const newProject = await projectService.create({
-        ...formData,
-        Name: formData.Name || formData.title
-      })
-      setProjects(prev => [newProject, ...prev])
-      setShowCreateModal(false)
-      resetForm()
-      toast.success('Project created successfully')
+      
+      // Prepare clean data for submission
+      const projectData = {
+        Name: formData.Name?.trim() || formData.title?.trim(),
+        title: formData.title?.trim(),
+        description: formData.description?.trim() || '',
+        client_id: clientId,
+        budget: budgetValue,
+        start_date: formData.start_date || '',
+        end_date: formData.end_date || '',
+        notes: formData.notes?.trim() || ''
+      }
+
+      const newProject = await projectService.create(projectData)
+      
+      if (newProject) {
+        setProjects(prev => [newProject, ...prev])
+        setShowCreateModal(false)
+        resetForm()
+        toast.success('Project created successfully')
+      }
     } catch (err) {
-      toast.error('Failed to create project')
+      const errorMessage = err?.message || 'Failed to create project'
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleDelete = async (id) => {
+    if (!id) {
+      toast.error('Invalid project ID')
+      return
+    }
+
     if (!confirm('Are you sure you want to delete this project?')) return
 
     try {
       await projectService.delete(id)
       setProjects(prev => prev.filter(p => p.Id !== id))
       toast.success('Project deleted successfully')
+      
+      // Close detail modal if deleting the currently viewed project
       if (selectedProject?.Id === id) {
         setShowDetailModal(false)
         setSelectedProject(null)
       }
     } catch (err) {
-      toast.error('Failed to delete project')
+      const errorMessage = err?.message || 'Failed to delete project'
+      toast.error(errorMessage)
     }
   }
 
@@ -102,13 +152,58 @@ const [formData, setFormData] = useState({
     })
   }
 
+  // Safe filtering with proper null checks
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.Name?.toLowerCase().includes(searchTerm.toLowerCase())
+    if (!project) return false
+    
+    const searchLower = searchTerm.toLowerCase()
+    const matchesSearch = !searchTerm || 
+      (project.title && project.title.toLowerCase().includes(searchLower)) ||
+      (project.description && project.description.toLowerCase().includes(searchLower)) ||
+      (project.Name && project.Name.toLowerCase().includes(searchLower))
+    
     const matchesFilter = filterStatus === 'all' || project.status === filterStatus
+    
     return matchesSearch && matchesFilter
   })
+
+  // Helper functions for safe data display
+  const formatCurrency = (value) => {
+    if (value == null || value === '') return 'N/A'
+    const numValue = parseFloat(value)
+    return isNaN(numValue) ? 'N/A' : `$${numValue.toLocaleString()}`
+  }
+
+  const formatDate = (dateValue) => {
+    if (!dateValue) return 'N/A'
+    try {
+      const date = new Date(dateValue)
+      return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString()
+    } catch {
+      return 'N/A'
+    }
+  }
+
+  const getProgress = (progress) => {
+    const numProgress = parseFloat(progress)
+    if (isNaN(numProgress)) return 0
+    return Math.max(0, Math.min(100, numProgress))
+  }
+
+  const handleFormFieldChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleNumericFieldChange = (field, value, parser = parseFloat) => {
+    if (value === '') {
+      setFormData(prev => ({ ...prev, [field]: '' }))
+    } else {
+      const numValue = parser(value)
+      if (!isNaN(numValue)) {
+        setFormData(prev => ({ ...prev, [field]: numValue }))
+      }
+    }
+  }
 
   if (loading) return <Loading />
   if (error) return <Error message={error} onRetry={fetchProjects} />
@@ -153,63 +248,75 @@ const [formData, setFormData] = useState({
         <Empty message="No projects found" />
       ) : (
         <div className="grid gap-4">
-          {filteredProjects.map(project => (
-            <Card key={project.Id} className="p-6">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-<h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {project.title || project.Name}
-                  </h3>
-                  <p className="text-gray-600 mb-4">{project.description || ''}</p>
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                    <div>
-                      <p><strong>Budget:</strong> ${project.budget?.toLocaleString() || 'N/A'}</p>
-                      <p><strong>Actual Cost:</strong> ${project.actual_cost?.toLocaleString() || '0'}</p>
+          {filteredProjects.map(project => {
+            // Ensure project is valid
+            if (!project || !project.Id) return null
+            
+            return (
+              <Card key={project.Id} className="p-6">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {project.title || project.Name || 'Untitled Project'}
+                    </h3>
+                    {/* Safe description rendering with proper error handling */}
+                    <div className="text-gray-600 mb-4">
+                      {typeof project.description === 'string' && project.description.trim() 
+                        ? project.description 
+                        : 'No description available'
+                      }
                     </div>
-                    <div>
-                      <p><strong>Start Date:</strong> {project.start_date ? new Date(project.start_date).toLocaleDateString() : 'N/A'}</p>
-                      <p><strong>End Date:</strong> {project.end_date ? new Date(project.end_date).toLocaleDateString() : 'N/A'}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                      <div>
+                        <p><strong>Budget:</strong> {formatCurrency(project.budget)}</p>
+                        <p><strong>Actual Cost:</strong> {formatCurrency(project.actual_cost)}</p>
+                      </div>
+                      <div>
+                        <p><strong>Start Date:</strong> {formatDate(project.start_date)}</p>
+                        <p><strong>End Date:</strong> {formatDate(project.end_date)}</p>
+                      </div>
+                      <div>
+                        <p><strong>Progress:</strong> {getProgress(project.progress)}%</p>
+                        <p><strong>Client ID:</strong> {project.client_id || 'N/A'}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p><strong>Progress:</strong> {project.progress || 0}%</p>
-                      <p><strong>Client ID:</strong> {project.client_id}</p>
+                    {project.notes && typeof project.notes === 'string' && project.notes.trim() && (
+                      <p className="text-gray-600 mt-4 italic">{project.notes}</p>
+                    )}
+                    {/* Safe progress bar with proper bounds checking */}
+                    <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                        style={{ width: `${getProgress(project.progress)}%` }}
+                      ></div>
                     </div>
                   </div>
-                  {project.notes && (
-                    <p className="text-gray-600 mt-4 italic">{project.notes}</p>
-                  )}
-                  <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full" 
-                      style={{ width: `${project.progress || 0}%` }}
-                    ></div>
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={project.status || 'planning'} />
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedProject(project)
+                          setShowDetailModal(true)
+                        }}
+                      >
+                        <ApperIcon name="Eye" size={16} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(project.Id)}
+                      >
+                        <ApperIcon name="Trash2" size={16} />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={project.status} />
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedProject(project)
-                        setShowDetailModal(true)
-                      }}
-                    >
-                      <ApperIcon name="Eye" size={16} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(project.Id)}
-                    >
-                      <ApperIcon name="Trash2" size={16} />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            )
+          })}
         </div>
       )}
 
@@ -226,19 +333,22 @@ const [formData, setFormData] = useState({
                   </label>
                   <Input
                     value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) => handleFormFieldChange('title', e.target.value)}
                     required
+                    placeholder="Enter project title"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Client ID *
-</label>
+                  </label>
                   <Input
                     type="number"
                     value={formData.client_id}
-                    onChange={(e) => setFormData(prev => ({ ...prev, client_id: e.target.value === '' ? '' : parseInt(e.target.value) }))}
+                    onChange={(e) => handleNumericFieldChange('client_id', e.target.value, parseInt)}
                     required
+                    placeholder="Enter client ID"
+                    min="1"
                   />
                 </div>
                 <div>
@@ -246,21 +356,24 @@ const [formData, setFormData] = useState({
                     Description
                   </label>
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows="3"
                     value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) => handleFormFieldChange('description', e.target.value)}
+                    placeholder="Enter project description"
                   />
                 </div>
                 <div>
-<label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Budget
                   </label>
                   <Input
                     type="number"
                     step="0.01"
                     value={formData.budget}
-                    onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value === '' ? '' : parseFloat(e.target.value) }))}
+                    onChange={(e) => handleNumericFieldChange('budget', e.target.value)}
+                    placeholder="Enter budget amount"
+                    min="0"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -271,7 +384,7 @@ const [formData, setFormData] = useState({
                     <Input
                       type="date"
                       value={formData.start_date}
-                      onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
+                      onChange={(e) => handleFormFieldChange('start_date', e.target.value)}
                     />
                   </div>
                   <div>
@@ -281,7 +394,7 @@ const [formData, setFormData] = useState({
                     <Input
                       type="date"
                       value={formData.end_date}
-                      onChange={(e) => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
+                      onChange={(e) => handleFormFieldChange('end_date', e.target.value)}
                     />
                   </div>
                 </div>
