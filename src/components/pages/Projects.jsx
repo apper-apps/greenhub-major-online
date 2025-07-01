@@ -157,10 +157,10 @@ const [formData, setFormData] = useState({
             <Card key={project.Id} className="p-6">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+<h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {project.title || project.Name}
                   </h3>
-                  <p className="text-gray-600 mb-4">{project.description}</p>
+                  <p className="text-gray-600 mb-4">{project.description || ''}</p>
 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
                     <div>
                       <p><strong>Budget:</strong> ${project.budget?.toLocaleString() || 'N/A'}</p>
