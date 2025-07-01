@@ -1,0 +1,86 @@
+@import 'react-toastify/dist/ReactToastify.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #FAFAF8;
+  color: #1f2937;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Toast Customization */
+.Toastify__toast-container {
+  width: 320px;
+  z-index: 9999;
+}
+
+.Toastify__toast {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  min-height: auto;
+}
+
+.Toastify__toast--success {
+  background: #4A7C59;
+}
+
+.Toastify__toast--error {
+  background: #B85450;
+}
+
+.Toastify__toast--warning {
+  background: #D4A574;
+}
+
+.Toastify__toast--info {
+  background: #5B8BA0;
+}
+
+.Toastify__progress-bar {
+  height: 3px;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors duration-200 font-medium;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary/90 transition-colors duration-200 font-medium;
+  }
+  
+  .btn-outline {
+    @apply border border-primary text-primary px-4 py-2 rounded-md hover:bg-primary hover:text-white transition-colors duration-200 font-medium;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-card p-6 border border-gray-100;
+  }
+  
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors duration-200;
+  }
+  
+  .status-badge {
+    @apply px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1;
+  }
+}

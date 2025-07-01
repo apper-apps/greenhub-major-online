@@ -1,0 +1,182 @@
+[
+  {
+    "Id": 1,
+    "clientId": 1,
+    "title": "Spring Garden Renovation",
+    "description": "Complete renovation of front garden with new plantings and irrigation system",
+    "status": "in-progress",
+    "startDate": "2024-03-01T00:00:00Z",
+    "endDate": "2024-03-15T00:00:00Z",
+    "budget": 8500.00,
+    "actualCost": 6200.00,
+    "progress": 75,
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Remove old plants",
+        "status": "completed",
+        "assignedTo": "John Smith",
+        "dueDate": "2024-03-03T00:00:00Z"
+      },
+      {
+        "id": 2,
+        "title": "Install irrigation system",
+        "status": "in-progress",
+        "assignedTo": "Mike Johnson",
+        "dueDate": "2024-03-08T00:00:00Z"
+      },
+      {
+        "id": 3,
+        "title": "Plant new garden",
+        "status": "pending",
+        "assignedTo": "Sarah Wilson",
+        "dueDate": "2024-03-12T00:00:00Z"
+      }
+    ],
+    "notes": "Client requested organic fertilizers only",
+    "createdAt": "2024-02-15T09:00:00Z"
+  },
+  {
+    "Id": 2,
+    "clientId": 2,
+    "title": "Weekly Maintenance Contract",
+    "description": "Ongoing weekly maintenance including mowing, trimming, and seasonal cleanup",
+    "status": "in-progress",
+    "startDate": "2024-01-01T00:00:00Z",
+    "endDate": "2024-12-31T00:00:00Z",
+    "budget": 12000.00,
+    "actualCost": 3200.00,
+    "progress": 25,
+    "tasks": [
+      {
+        "id": 4,
+        "title": "Weekly mowing",
+        "status": "in-progress",
+        "assignedTo": "Team A",
+        "dueDate": "2024-03-05T00:00:00Z"
+      },
+      {
+        "id": 5,
+        "title": "Seasonal cleanup",
+        "status": "completed",
+        "assignedTo": "Team B",
+        "dueDate": "2024-02-28T00:00:00Z"
+      }
+    ],
+    "notes": "Commercial property requires early morning service",
+    "createdAt": "2024-01-01T08:00:00Z"
+  },
+  {
+    "Id": 3,
+    "clientId": 3,
+    "title": "Drainage Solution Implementation",
+    "description": "Install French drain system and flood-resistant plantings",
+    "status": "planning",
+    "startDate": "2024-04-01T00:00:00Z",
+    "endDate": "2024-04-20T00:00:00Z",
+    "budget": 15200.00,
+    "actualCost": 0.00,
+    "progress": 0,
+    "tasks": [
+      {
+        "id": 6,
+        "title": "Site survey and planning",
+        "status": "in-progress",
+        "assignedTo": "Tom Brown",
+        "dueDate": "2024-03-10T00:00:00Z"
+      },
+      {
+        "id": 7,
+        "title": "Obtain permits",
+        "status": "pending",
+        "assignedTo": "Office Team",
+        "dueDate": "2024-03-15T00:00:00Z"
+      }
+    ],
+    "notes": "Requires city permits for drainage work",
+    "createdAt": "2024-02-20T11:30:00Z"
+  },
+  {
+    "Id": 4,
+    "clientId": 4,
+    "title": "Municipal Park Upgrade",
+    "description": "Landscape design and installation for city park entrance",
+    "status": "completed",
+    "startDate": "2024-01-15T00:00:00Z",
+    "endDate": "2024-02-15T00:00:00Z",
+    "budget": 18000.00,
+    "actualCost": 17200.00,
+    "progress": 100,
+    "tasks": [
+      {
+        "id": 8,
+        "title": "Design approval",
+        "status": "completed",
+        "assignedTo": "Design Team",
+        "dueDate": "2024-01-20T00:00:00Z"
+      },
+      {
+        "id": 9,
+        "title": "Plant installation",
+        "status": "completed",
+        "assignedTo": "Installation Team",
+        "dueDate": "2024-02-10T00:00:00Z"
+      }
+    ],
+    "notes": "Project completed on time and under budget",
+    "createdAt": "2024-01-10T14:15:00Z"
+  },
+  {
+    "Id": 5,
+    "clientId": 5,
+    "title": "HOA Common Area Refresh",
+    "description": "Update common area landscaping with modern, low-maintenance design",
+    "status": "planning",
+    "startDate": "2024-05-01T00:00:00Z",
+    "endDate": "2024-05-30T00:00:00Z",
+    "budget": 22500.00,
+    "actualCost": 0.00,
+    "progress": 0,
+    "tasks": [
+      {
+        "id": 10,
+        "title": "Board presentation",
+        "status": "completed",
+        "assignedTo": "Sales Team",
+        "dueDate": "2024-02-25T00:00:00Z"
+      },
+      {
+        "id": 11,
+        "title": "Design development",
+        "status": "in-progress",
+        "assignedTo": "Design Team",
+        "dueDate": "2024-03-15T00:00:00Z"
+      }
+    ],
+    "notes": "Awaiting final approval from HOA board",
+    "createdAt": "2024-02-10T16:45:00Z"
+  },
+  {
+    "Id": 6,
+    "clientId": 6,
+    "title": "Therapeutic Garden Installation",
+    "description": "Design and install healing garden for medical center patients",
+    "status": "on-hold",
+    "startDate": "2024-06-01T00:00:00Z",
+    "endDate": "2024-06-25T00:00:00Z",
+    "budget": 12800.00,
+    "actualCost": 0.00,
+    "progress": 0,
+    "tasks": [
+      {
+        "id": 12,
+        "title": "Therapeutic plant research",
+        "status": "in-progress",
+        "assignedTo": "Research Team",
+        "dueDate": "2024-03-20T00:00:00Z"
+      }
+    ],
+    "notes": "Project on hold pending budget approval",
+    "createdAt": "2024-02-25T13:20:00Z"
+  }
+]

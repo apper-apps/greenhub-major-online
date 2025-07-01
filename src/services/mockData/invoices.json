@@ -1,0 +1,202 @@
+[
+  {
+    "Id": 1,
+    "projectId": 4,
+    "clientId": 4,
+    "invoiceNumber": "INV-2024-001",
+    "items": [
+      {
+        "id": 1,
+        "description": "Landscape Design Services",
+        "quantity": 1,
+        "unitPrice": 2500.00,
+        "total": 2500.00
+      },
+      {
+        "id": 2,
+        "description": "Plant Materials",
+        "quantity": 1,
+        "unitPrice": 8200.00,
+        "total": 8200.00
+      },
+      {
+        "id": 3,
+        "description": "Installation Labor",
+        "quantity": 40,
+        "unitPrice": 65.00,
+        "total": 2600.00
+      },
+      {
+        "id": 4,
+        "description": "Irrigation System",
+        "quantity": 1,
+        "unitPrice": 3900.00,
+        "total": 3900.00
+      }
+    ],
+    "subtotal": 17200.00,
+    "tax": 1376.00,
+    "total": 18576.00,
+    "status": "paid",
+    "issueDate": "2024-02-16T00:00:00Z",
+    "dueDate": "2024-03-16T00:00:00Z",
+    "paidDate": "2024-02-28T00:00:00Z",
+    "notes": "Thank you for your business!",
+    "createdAt": "2024-02-16T10:30:00Z"
+  },
+  {
+    "Id": 2,
+    "projectId": 1,
+    "clientId": 1,
+    "invoiceNumber": "INV-2024-002",
+    "items": [
+      {
+        "id": 5,
+        "description": "Garden Renovation - Phase 1",
+        "quantity": 1,
+        "unitPrice": 4200.00,
+        "total": 4200.00
+      },
+      {
+        "id": 6,
+        "description": "Irrigation Materials",
+        "quantity": 1,
+        "unitPrice": 1800.00,
+        "total": 1800.00
+      },
+      {
+        "id": 7,
+        "description": "Labor - 24 hours",
+        "quantity": 24,
+        "unitPrice": 55.00,
+        "total": 1320.00
+      }
+    ],
+    "subtotal": 7320.00,
+    "tax": 585.60,
+    "total": 7905.60,
+    "status": "sent",
+    "issueDate": "2024-03-01T00:00:00Z",
+    "dueDate": "2024-03-31T00:00:00Z",
+    "paidDate": null,
+    "notes": "Progress payment for ongoing renovation project",
+    "createdAt": "2024-03-01T14:20:00Z"
+  },
+  {
+    "Id": 3,
+    "projectId": 2,
+    "clientId": 2,
+    "invoiceNumber": "INV-2024-003",
+    "items": [
+      {
+        "id": 8,
+        "description": "February Maintenance Services",
+        "quantity": 4,
+        "unitPrice": 350.00,
+        "total": 1400.00
+      },
+      {
+        "id": 9,
+        "description": "Seasonal Cleanup",
+        "quantity": 1,
+        "unitPrice": 800.00,
+        "total": 800.00
+      }
+    ],
+    "subtotal": 2200.00,
+    "tax": 176.00,
+    "total": 2376.00,
+    "status": "overdue",
+    "issueDate": "2024-03-01T00:00:00Z",
+    "dueDate": "2024-03-15T00:00:00Z",
+    "paidDate": null,
+    "notes": "Monthly maintenance billing - NET 15",
+    "createdAt": "2024-03-01T09:15:00Z"
+  },
+  {
+    "Id": 4,
+    "projectId": 1,
+    "clientId": 1,
+    "invoiceNumber": "INV-2024-004",
+    "items": [
+      {
+        "id": 10,
+        "description": "Initial Consultation",
+        "quantity": 1,
+        "unitPrice": 150.00,
+        "total": 150.00
+      },
+      {
+        "id": 11,
+        "description": "Site Analysis",
+        "quantity": 1,
+        "unitPrice": 300.00,
+        "total": 300.00
+      }
+    ],
+    "subtotal": 450.00,
+    "tax": 36.00,
+    "total": 486.00,
+    "status": "paid",
+    "issueDate": "2024-02-01T00:00:00Z",
+    "dueDate": "2024-02-15T00:00:00Z",
+    "paidDate": "2024-02-08T00:00:00Z",
+    "notes": "Initial project consultation and planning",
+    "createdAt": "2024-02-01T11:45:00Z"
+  },
+  {
+    "Id": 5,
+    "projectId": 3,
+    "clientId": 3,
+    "invoiceNumber": "INV-2024-005",
+    "items": [
+      {
+        "id": 12,
+        "description": "Site Survey and Assessment",
+        "quantity": 1,
+        "unitPrice": 500.00,
+        "total": 500.00
+      },
+      {
+        "id": 13,
+        "description": "Drainage Design",
+        "quantity": 1,
+        "unitPrice": 1200.00,
+        "total": 1200.00
+      }
+    ],
+    "subtotal": 1700.00,
+    "tax": 136.00,
+    "total": 1836.00,
+    "status": "draft",
+    "issueDate": "2024-03-10T00:00:00Z",
+    "dueDate": "2024-04-10T00:00:00Z",
+    "paidDate": null,
+    "notes": "Design phase billing for drainage project",
+    "createdAt": "2024-03-10T15:30:00Z"
+  },
+  {
+    "Id": 6,
+    "projectId": 5,
+    "clientId": 5,
+    "invoiceNumber": "INV-2024-006",
+    "items": [
+      {
+        "id": 14,
+        "description": "Design Consultation",
+        "quantity": 1,
+        "unitPrice": 750.00,
+        "total": 750.00
+      }
+    ],
+    "subtotal": 750.00,
+    "tax": 60.00,
+    "total": 810.00,
+    "status": "sent",
+    "issueDate": "2024-03-05T00:00:00Z",
+    "dueDate": "2024-04-05T00:00:00Z",
+    "paidDate": null,
+    "notes": "Design consultation for HOA project",
+    "createdAt": "2024-03-05T12:00:00Z"
+  }
+]
